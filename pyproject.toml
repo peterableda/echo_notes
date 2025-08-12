@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "echonotes"
 version = "0.1.0"
 description = "A cross-platform audio recording and transcription tool with Python recording and hosted Whisper API"
-readme = "docs/README.md"
+readme = "README.md"
 requires-python = ">=3.12"
 authors = [
     {name = "EchoNotes Team"}

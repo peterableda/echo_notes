@@ -21,6 +21,12 @@ logger = logging.getLogger(__name__)
 
 def main():
     """Main Streamlit application."""
+    # Disable Streamlit usage telemetry
+    try:
+        st.set_option("browser.gatherUsageStats", False)
+    except Exception:
+        pass
+
     # Page configuration - must be first
     st.set_page_config(
         page_title="EchoNotes",

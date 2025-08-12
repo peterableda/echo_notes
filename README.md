@@ -111,24 +111,3 @@ Each transcription creates a folder under `~/Documents/transcriptions/`:
     ├── original_filename.ext    # Original audio file
     └── project_info.txt         # Project metadata
 ```
-
-### Dependencies
-
-- Streamlit, Requests, PyDub, python-dotenv, sounddevice, numpy, soundfile, OpenAI
-
-## Development
-
-### Running Tests
-```bash
-uv run python -m pytest tests/
-```
-
-### Code Style
-```bash
-uv run black src/ tests/
-uv run ruff check src/ tests/
-```
-
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
