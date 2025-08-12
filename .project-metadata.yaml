@@ -3,11 +3,12 @@ description: >-
   EchoNotes is a Streamlit application for recording audio and transcribing it via a hosted Whisper API,
   organizing projects, and chatting with transcripts using an OpenAI-compatible LLM endpoint.
 date: '2025-08-12'
+author: Peter Ableda
 specification_version: '1.0'
 prototype_version: '1.0'
 
 runtimes:
-  - editor: Workbench
+  - editor: PBJ Workbench
     kernel: Python 3.12
     edition: Standard
 
@@ -22,7 +23,7 @@ environment_variables:
     required: true
   LLM_MODEL_ID:
     default: ""
-    description: "Model identifier for LLM completions, e.g. gpt-4o-mini"
+    description: "Model identifier for LLM completions, e.g. meta/llama-3.3-70b-instruct"
     required: true
   API_KEY:
     default: ""
