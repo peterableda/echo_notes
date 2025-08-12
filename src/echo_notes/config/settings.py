@@ -1,6 +1,7 @@
 """Configuration and settings management."""
 
 import os
+import json
 from typing import Optional
 from pathlib import Path
 from dotenv import load_dotenv
@@ -20,11 +21,19 @@ class Settings:
         load_dotenv()
 
         # API Configuration (unified for both Whisper and LLM)
-        # Support backward compatibility with WHISPER_API_KEY
+        # Priority: env var API_KEY -> env var WHISPER_API_KEY -> /tmp/jwt access_token (AMP/Inference)
         self.api_key = os.getenv("API_KEY") or os.getenv("WHISPER_API_KEY")
         if not self.api_key:
+            # Fallback to Cloudera AMP/Inference token file if present
+            try:
+                with open("/tmp/jwt", "r", encoding="utf-8") as f:
+                    token_data = json.load(f)
+                    self.api_key = token_data.get("access_token")
+            except Exception:
+                self.api_key = None
+        if not self.api_key:
             raise ConfigurationError(
-                "API_KEY is required. Please set API_KEY in your .env file or environment variables."
+                "API_KEY is required. Set API_KEY (or WHISPER_API_KEY) in env/.env, or ensure /tmp/jwt contains access_token."
             )
 
         # Whisper API Configuration

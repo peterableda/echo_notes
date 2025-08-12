@@ -1,0 +1,54 @@
+name: EchoNotes
+description: >-
+  EchoNotes is a Streamlit application for recording audio and transcribing it via a hosted Whisper API,
+  organizing projects, and chatting with transcripts using an OpenAI-compatible LLM endpoint.
+date: '2025-08-12'
+specification_version: '1.0'
+prototype_version: '1.0'
+
+runtimes:
+  - editor: Workbench
+    kernel: Python 3.12
+    edition: Standard
+
+environment_variables:
+  WHISPER_BASE_URL:
+    default: ""
+    description: "Base URL for Whisper API, e.g. https://example/v1"
+    required: true
+  LLM_BASE_URL:
+    default: ""
+    description: "Base URL for OpenAI-compatible LLM API, e.g. https://example/v1"
+    required: true
+  LLM_MODEL_ID:
+    default: ""
+    description: "Model identifier for LLM completions, e.g. gpt-4o-mini"
+    required: true
+  API_KEY:
+    default: ""
+    description: "Unified API key for Whisper and LLM services"
+    required: false
+  MEETINGS_DIR:
+    default: "/home/cdsw/recordings"
+    description: "Optional override for recordings directory (default: ~/Documents/recordings)"
+    required: false
+  TRANSCRIPTIONS_DIR:
+    default: "/home/cdsw/transcriptions"
+    description: "Optional override for transcriptions directory (default: ~/Documents/transcriptions)"
+    required: false
+
+tasks:
+  - type: run_session
+    name: Install EchoNotes
+    short_summary: Install project package and dependencies
+    code: |
+      import os, sys, subprocess
+      env = os.environ.copy()
+      subprocess.check_call([sys.executable, '-m', 'pip', 'install', '.'], env=env)
+
+  - type: start_application
+    name: EchoNotes UI
+    subdomain: echonotes
+    script: amp_start.py
+    kernel: python3
+    short_summary: Start the EchoNotes app
