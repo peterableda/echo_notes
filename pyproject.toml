@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "echonotes"
+version = "0.1.0"
+description = "A cross-platform audio recording and transcription tool with Python recording and hosted Whisper API"
+readme = "docs/README.md"
+requires-python = ">=3.12"
+authors = [
+    {name = "EchoNotes Team"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "streamlit>=1.28.0",
+    "pydub>=0.25.0",
+    "requests>=2.28.0",
+    "python-dotenv>=1.0.0",
+    "sounddevice>=0.4.6",
+    "numpy>=1.24.0",
+    "soundfile>=0.12.1",
+    "openai>=1.0.0",
+    "pyperclip>=1.8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/call-capture"
+Repository = "https://github.com/yourusername/call-capture"
+Documentation = "https://github.com/yourusername/call-capture/blob/main/docs/README.md"
+
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
