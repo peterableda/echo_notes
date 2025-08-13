@@ -14,8 +14,6 @@ def page_chat_with_transcription():
     # Check if we were navigated here from transcription completion
     if 'preselect_transcript_path' in st.session_state:
         preselect_name = st.session_state.get('preselect_project_name', 'Unknown')
-        st.info(f"🎯 **Ready to chat with:** {preselect_name}")
-        st.markdown("---")
 
     # Initialize LLM client - cache in session state to avoid recreation on every rerun
     if 'llm_client' not in st.session_state:
@@ -103,23 +101,14 @@ def page_chat_with_transcription():
                         if chat_key not in st.session_state:
                             st.session_state[chat_key] = []
 
-                        if st.button("📋 Meeting Notes", key="quick_summary", use_container_width=True, help="Generate comprehensive meeting notes"):
-                            prompt = "Write meeting notes for the transcription."
-                            st.session_state[chat_key].append({"role": "user", "content": prompt})
-                            st.session_state[f"{chat_key}_pending_response"] = True
-                            st.rerun()
-
-                        if st.button("🎯 Impactful Quotes", key="quick_keypoints", use_container_width=True, help="Extract high-impact quotes"):
-                            prompt = "Collect High impact quotes from the transcription."
-                            st.session_state[chat_key].append({"role": "user", "content": prompt})
-                            st.session_state[f"{chat_key}_pending_response"] = True
-                            st.rerun()
-
-                        if st.button("👥 Participants", key="quick_participants", use_container_width=True, help="Identify key participants"):
-                            prompt = "Who were the key participants in this conversation? What were their main contributions and viewpoints?"
-                            st.session_state[chat_key].append({"role": "user", "content": prompt})
-                            st.session_state[f"{chat_key}_pending_response"] = True
-                            st.rerun()
+                        # Render configurable actions from settings
+                        for idx, action in enumerate(settings.quick_actions):
+                            label = action.get("label", f"Action {idx+1}")
+                            prompt = action.get("prompt", "")
+                            if st.button(label, key=f"qa_{idx}", use_container_width=True):
+                                st.session_state[chat_key].append({"role": "user", "content": prompt})
+                                st.session_state[f"{chat_key}_pending_response"] = True
+                                st.rerun()
 
                         if st.button("🗑️ Clear Chat", key="quick_clear", use_container_width=True, help="Clear conversation history"):
                             st.session_state[chat_key] = []

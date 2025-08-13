@@ -101,8 +101,6 @@ def page_record():
                     st.info("No local audio devices found. You can switch to Browser mode below.")
             except Exception:
                 st.info("Unable to query audio devices. You can switch to Browser mode below.")
-        else:
-            st.info("PortAudio not available. Browser recording is enabled below.")
 
         # Filename input (only show when not recording)
         if not st.session_state.recording:

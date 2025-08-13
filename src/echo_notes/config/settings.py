@@ -2,6 +2,7 @@
 
 import os
 import json
+from typing import List, Dict
 from typing import Optional
 from pathlib import Path
 from dotenv import load_dotenv
@@ -102,6 +103,9 @@ class Settings:
         self.chunk_duration_minutes = 10  # 10 minute chunks for safety
         self.chunk_overlap_seconds = 5    # 5 second overlap between chunks
 
+        # Quick Actions configuration for Chat page
+        self.quick_actions: List[Dict[str, str]] = self._load_quick_actions()
+
     @property
     def whisper_headers(self) -> dict:
         """Get headers for Whisper API requests."""
@@ -117,3 +121,40 @@ class Settings:
         sanitized_name = "".join(c for c in name if c.isalnum() or c in (' ', '-', '_')).rstrip()
         project_dir_name = f"{timestamp}_{sanitized_name}"
         return self.transcriptions_dir / project_dir_name
+
+    def _load_quick_actions(self) -> List[Dict[str, str]]:
+        """Load configurable Quick Actions for Chat page.
+
+        Order of precedence:
+        1) QUICK_ACTIONS_FILE (JSON array of {label, prompt})
+        2) QUICK_ACTIONS (JSON string)
+        3) Built-in defaults
+        """
+        # Defaults (updated): Summary, Sentiment, and Action Items
+        defaults: List[Dict[str, str]] = [
+            {"label": "🧾 Summary", "prompt": "Write a concise summary of the transcription."},
+            {"label": "🙂 Sentiment", "prompt": "Analyze the overall sentiment and emotional tone of the conversation."},
+            {"label": "✅ Action Items", "prompt": "Extract action items with owners and suggested due dates when possible."},
+        ]
+
+        # File-based override
+        file_path = os.getenv("QUICK_ACTIONS_FILE")
+        if file_path and Path(file_path).expanduser().exists():
+            try:
+                data = json.loads(Path(file_path).expanduser().read_text(encoding="utf-8"))
+                if isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                    return data
+            except Exception:
+                pass
+
+        # Env var JSON override
+        env_json = os.getenv("QUICK_ACTIONS")
+        if env_json:
+            try:
+                data = json.loads(env_json)
+                if isinstance(data, list) and all(isinstance(x, dict) for x in data):
+                    return data
+            except Exception:
+                pass
+
+        return defaults
