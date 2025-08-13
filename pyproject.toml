@@ -29,6 +29,7 @@ dependencies = [
     "soundfile>=0.12.1",
     "openai>=1.0.0",
     "pyperclip>=1.8.0",
+    "streamlit-audiorecorder>=0.0.5",
 ]
 
 [project.urls]
