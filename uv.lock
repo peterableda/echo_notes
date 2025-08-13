@@ -212,6 +212,7 @@ dependencies = [
     { name = "sounddevice" },
     { name = "soundfile" },
     { name = "streamlit" },
+    { name = "streamlit-audiorecorder" },
 ]
 
 [package.dev-dependencies]
@@ -232,6 +233,7 @@ requires-dist = [
     { name = "sounddevice", specifier = ">=0.4.6" },
     { name = "soundfile", specifier = ">=0.12.1" },
     { name = "streamlit", specifier = ">=1.28.0" },
+    { name = "streamlit-audiorecorder", specifier = ">=0.0.5" },
 ]
 
 [package.metadata.requires-dev]
@@ -1066,6 +1068,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/19/da/cef67ed4614f04932a00068fe6291455deb884a04fd94f7ad78492b0e91a/streamlit-1.47.1.tar.gz", hash = "sha256:daed79763d1cafeb03cdd800b91aa9c7adc3688c6b2cbf4ecc2ca899aab82a2a", size = 9544057 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c0/4d/701f5fcf9c0d388dad9d94ba272d333c7efa6231ddee1babc59d26dc14d2/streamlit-1.47.1-py3-none-any.whl", hash = "sha256:c7881549e3ba1daecfb5541f32ee6ff70e549f1c3400c92d045897cb7a29772a", size = 9944872 },
+]
+
+[[package]]
+name = "streamlit-audiorecorder"
+version = "0.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydub" },
+    { name = "streamlit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3e/1c/22c755df2606163e5c646e8bad87aa29eaa8e1c163787282607eeb9abda0/streamlit_audiorecorder-0.0.6.tar.gz", hash = "sha256:64b66c25b2b5e603cbea67b14074aaa7e93188913d7c83bbbc9f4d8ff237939d", size = 483731 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/90/d2/c61e0f91617e43bc60627f633953ee35877380b90fcc0888de81786ddd17/streamlit_audiorecorder-0.0.6-py3-none-any.whl", hash = "sha256:a6f4fa16136d96ed8457768b9fe7e7745a3e1ba3fc50b85ad87b39f785e1a067", size = 487685 },
 ]
 
 [[package]]

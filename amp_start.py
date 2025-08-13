@@ -21,4 +21,5 @@ cmd = [
 ]
 
 env = os.environ.copy()
+env["STREAMLIT_BROWSER_GATHERUSAGESTATS"] = "false"
 subprocess.check_call(cmd, env=env)

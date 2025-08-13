@@ -20,6 +20,8 @@ def page_record():
         st.session_state.recording_start_time = None
     if 'last_recording' not in st.session_state:
         st.session_state.last_recording = None
+    if 'browser_last_signature' not in st.session_state:
+        st.session_state.browser_last_signature = None
 
     # Load saved device preference from file
     if 'device_index' not in st.session_state:
@@ -96,11 +98,11 @@ def page_record():
                         if 'recorder' in st.session_state:
                             del st.session_state.recorder
                 else:
-                    st.info("No local audio devices found. Falling back to browser-based recorder below.")
+                    st.info("No local audio devices found. You can switch to Browser mode below.")
             except Exception:
-                st.info("Unable to query audio devices. Falling back to browser-based recorder below.")
+                st.info("Unable to query audio devices. You can switch to Browser mode below.")
         else:
-            st.info("PortAudio not available. Using browser-based recorder below.")
+            st.info("PortAudio not available. Browser recording is enabled below.")
 
         # Filename input (only show when not recording)
         if not st.session_state.recording:
@@ -162,52 +164,53 @@ def page_record():
                     else:
                         st.toast("❌ Failed to stop recording", icon="⚠️")
         else:
-            # Show start options: Native or Browser-based
-            cols = st.columns(2)
-            with cols[0]:
-                start_native = st.button("🔴 Start (Native)", disabled=not native_available, use_container_width=True)
-            with cols[1]:
-                start_browser = st.button("🎙️ Start (Browser)", use_container_width=True)
+            # Choose recording mode
+            mode = 'Browser'
+            if native_available:
+                mode = st.radio("Mode:", ["Native", "Browser"], horizontal=True)
 
-            if start_native and native_available:
-                if 'recorder' not in st.session_state:
-                    device_index = st.session_state.get('device_index', None)
-                    try:
-                        st.session_state.recorder = AudioRecorder(device_index=device_index)
-                    except Exception as e:
-                        st.error(f"Failed to create recorder: {e}")
-                        return
-                filename = recording_filename if 'recording_filename' in locals() and recording_filename.strip() else None
-                recorder = st.session_state.recorder
-                if recorder.start_recording(filename):
-                    st.session_state.recording = True
-                    st.session_state.recording_start_time = time.time()
-                    actual_filename = Path(recorder.output_file).name if hasattr(recorder, 'output_file') else filename
-                    st.session_state.current_recording_filename = actual_filename
-                    st.toast("🎤 Recording started!", icon="✅")
-                    st.rerun()
-                else:
-                    st.toast("❌ Failed to start recording", icon="⚠️")
+            if mode == "Native" and native_available:
+                if st.button("🔴 Start Recording", use_container_width=True, type="primary", key="start_native_btn"):
+                    if 'recorder' not in st.session_state:
+                        device_index = st.session_state.get('device_index', None)
+                        try:
+                            st.session_state.recorder = AudioRecorder(device_index=device_index)
+                        except Exception as e:
+                            st.error(f"Failed to create recorder: {e}")
+                            return
+                    filename = recording_filename if 'recording_filename' in locals() and recording_filename.strip() else None
+                    recorder = st.session_state.recorder
+                    if recorder.start_recording(filename):
+                        st.session_state.recording = True
+                        st.session_state.recording_start_time = time.time()
+                        actual_filename = Path(recorder.output_file).name if hasattr(recorder, 'output_file') else filename
+                        st.session_state.current_recording_filename = actual_filename
+                        st.toast("🎤 Recording started!", icon="✅")
+                        st.rerun()
+                    else:
+                        st.toast("❌ Failed to start recording", icon="⚠️")
 
-            if start_browser:
+            if mode == "Browser":
                 try:
                     from audiorecorder import audiorecorder
-                except Exception as e:
+                except Exception:
                     st.error("Browser recorder unavailable. Try refreshing or use Upload/Transcribe.")
                     return
-                st.info("Recording with browser. Click Stop to finish.")
-                audio = audiorecorder("Start", "Stop")
-                if len(audio) > 0:
-                    filename = recording_filename.strip() if 'recording_filename' in locals() and recording_filename and recording_filename.strip() else None
-                    # Persist file in meetings dir
-                    name = filename if filename else f"recording_{int(time.time())}"
-                    target = Settings().meetings_dir / f"{name}.wav"
-                    audio.export(str(target), format="wav")
-                    st.toast(f"🎤 Recording saved: {target.name}", icon="✅")
-                    # Update recent recording state
-                    st.session_state.last_recording = str(target)
-                    st.session_state.recording_just_stopped = True
-                    st.rerun()
+                audio = audiorecorder("🔴 Start Recording", "Stop Recording")
+
+                if audio is not None and len(audio) > 0:
+                    # Build a simple signature to avoid duplicate saves on rerun
+                    sig = (len(audio), getattr(audio, 'frame_rate', None), getattr(audio, 'channels', None))
+                    if st.session_state.browser_last_signature != sig:
+                        filename = recording_filename.strip() if 'recording_filename' in locals() and recording_filename and recording_filename.strip() else None
+                        name = filename if filename else f"recording_{int(time.time())}"
+                        target = Settings().meetings_dir / f"{name}.wav"
+                        audio.export(str(target), format="wav")
+                        st.toast(f"🎤 Recording saved: {target.name}", icon="✅")
+                        st.session_state.last_recording = str(target)
+                        st.session_state.recording_just_stopped = True
+                        st.session_state.browser_last_signature = sig
+                        st.rerun()
 
         # Auto-refresh when recording to update the clock
         if st.session_state.recording:
