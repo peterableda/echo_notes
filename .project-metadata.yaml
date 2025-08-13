@@ -27,15 +27,15 @@ environment_variables:
     required: true
   API_KEY:
     default: ""
-    description: "Unified API key for Whisper and LLM services"
+    description: "API key for Whisper and LLM endpoints. When not provided, the generated /tmp/jwt is used."
     required: false
   MEETINGS_DIR:
     default: "/home/cdsw/recordings"
-    description: "Optional override for recordings directory (default: ~/Documents/recordings)"
+    description: "Optional override for recordings directory (default: /home/cdsw/recordings)"
     required: false
   TRANSCRIPTIONS_DIR:
     default: "/home/cdsw/transcriptions"
-    description: "Optional override for transcriptions directory (default: ~/Documents/transcriptions)"
+    description: "Optional override for transcriptions directory (default: /home/cdsw/transcriptions)"
     required: false
 
 tasks:
