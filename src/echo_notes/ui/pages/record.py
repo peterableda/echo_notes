@@ -51,52 +51,54 @@ def page_record():
         if native_available:
             try:
                 devices = sd.query_devices()
-            input_devices = [d for i, d in enumerate(devices) if d['max_input_channels'] > 0]
+                input_devices = [d for i, d in enumerate(devices) if d['max_input_channels'] > 0]
 
-            if input_devices:
-                device_names = ["Default Device"] + [f"[{i}] {d['name']}" for i, d in enumerate(devices) if d['max_input_channels'] > 0]
+                if input_devices:
+                    device_names = ["Default Device"] + [f"[{i}] {d['name']}" for i, d in enumerate(devices) if d['max_input_channels'] > 0]
 
-                # Determine the default selection index based on stored device_index
-                default_index = 0  # Default to "Default Device"
-                stored_device_index = st.session_state.get('device_index')
-                if stored_device_index is not None:
-                    # Find the device in the list
-                    for i, device_name in enumerate(device_names[1:], 1):  # Skip "Default Device"
-                        device_index_from_name = int(device_name.split(']')[0][1:])
-                        if device_index_from_name == stored_device_index:
-                            default_index = i
-                            break
+                    # Determine the default selection index based on stored device_index
+                    default_index = 0  # Default to "Default Device"
+                    stored_device_index = st.session_state.get('device_index')
+                    if stored_device_index is not None:
+                        # Find the device in the list
+                        for i, device_name in enumerate(device_names[1:], 1):  # Skip "Default Device"
+                            device_index_from_name = int(device_name.split(']')[0][1:])
+                            if device_index_from_name == stored_device_index:
+                                default_index = i
+                                break
 
-                # Simple device selection with session state persistence
-                selected_device = st.selectbox(
-                    "Select microphone:",
-                    device_names,
-                    index=default_index,
-                    help="Choose the microphone to use for recording",
-                    key="device_selector"
-                )
+                    # Simple device selection with session state persistence
+                    selected_device = st.selectbox(
+                        "Select microphone:",
+                        device_names,
+                        index=default_index,
+                        help="Choose the microphone to use for recording",
+                        key="device_selector"
+                    )
 
-                # Extract device index from selection
-                new_device_index = None
-                if selected_device != "Default Device":
-                    new_device_index = int(selected_device.split(']')[0][1:])
+                    # Extract device index from selection
+                    new_device_index = None
+                    if selected_device != "Default Device":
+                        new_device_index = int(selected_device.split(']')[0][1:])
 
-                # Update session state when device changes
-                if st.session_state.get('device_index') != new_device_index:
-                    st.session_state.device_index = new_device_index
+                    # Update session state when device changes
+                    if st.session_state.get('device_index') != new_device_index:
+                        st.session_state.device_index = new_device_index
 
-                    # Save device preference to file for persistence across sessions
-                    try:
-                        device_pref_file = Path.home() / '.echonotes_device'
-                        device_pref_file.write_text(str(new_device_index) if new_device_index is not None else 'None')
-                    except:
-                        pass  # Fail silently if we can't save
+                        # Save device preference to file for persistence across sessions
+                        try:
+                            device_pref_file = Path.home() / '.echonotes_device'
+                            device_pref_file.write_text(str(new_device_index) if new_device_index is not None else 'None')
+                        except:
+                            pass  # Fail silently if we can't save
 
-                    # Clear recorder to use new device
-                    if 'recorder' in st.session_state:
-                        del st.session_state.recorder
-            else:
-                st.info("No local audio devices found. Falling back to browser-based recorder below.")
+                        # Clear recorder to use new device
+                        if 'recorder' in st.session_state:
+                            del st.session_state.recorder
+                else:
+                    st.info("No local audio devices found. Falling back to browser-based recorder below.")
+            except Exception:
+                st.info("Unable to query audio devices. Falling back to browser-based recorder below.")
         else:
             st.info("PortAudio not available. Using browser-based recorder below.")
 
