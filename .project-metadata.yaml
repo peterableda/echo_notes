@@ -42,6 +42,7 @@ tasks:
   - type: run_session
     name: Install EchoNotes
     short_summary: Install project package and dependencies
+    kernel: Python 3.12
     cpu: 1
     memory: 2
     code: |
