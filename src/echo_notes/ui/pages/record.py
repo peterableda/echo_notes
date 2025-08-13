@@ -220,7 +220,7 @@ def page_record():
         recordings = get_recent_recordings(settings)
         if recordings:
             st.info(f"📊 **{len(recordings)} recordings found**")
-            st.markdown("Go to the **Transcribe** page to transcribe these recordings.")
+            st.caption("Open any recording in the Transcribe page")
 
             # Show recent recordings list (read-only)
             for i, recording in enumerate(recordings[:5]):  # Show only first 5
@@ -230,6 +230,17 @@ def page_record():
 
             if len(recordings) > 5:
                 st.caption(f"... and {len(recordings) - 5} more recordings")
+
+            page_refs = st.session_state.get("page_refs", {})
+            transcribe_page = page_refs.get("Transcribe")
+            if st.button("Transcribe recordings", use_container_width=True, key="open_transcribe_from_recordings"):
+                try:
+                    if transcribe_page is not None:
+                        st.switch_page(transcribe_page)
+                    else:
+                        st.switch_page("Transcribe")
+                except Exception:
+                    st.info("Switch to the Transcribe tab to continue.")
 
         else:
             st.info("No recordings yet. Start recording to see them here!")
