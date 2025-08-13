@@ -1,24 +1,37 @@
 # EchoNotes 📝
 
-A professional audio recording and transcription tool with pure Python recording and hosted Whisper API transcription.
+An audio recording and transcription tool built with Private AI endpoints.
 
-## Quick Start
 
-### Web Interface
-```bash
-# Start the application
-./start_ui.sh
-
-# Or directly with uv
-uv run python echo_notes_app.py
-```
+## Features
+- 🎤 Recording: Native cross-platform audio recording
+- 📝 Transcription: Hosted Whisper API with multi-language support (hosted by Cloudera AI Inference service)
+- 💬 Chat with Transcriptions: Ask questions, generate notes, and run configurable Quick Actions (OpenAI-compatible LLM hosted by Cloudera AI Inference service)
+- 📁 Project Organization: Per-transcription folders with original + transcript
+- ⚡ AMP-ready: One-click import to Cloudera AI
 
 ## Installation
+
+### Running in Cloudera AI
+
+This repo includes an AMP manifest (`.project-metadata.yaml`). To deploy via Cloudera AI Workbench:
+
+1. In Cloudera AI, create a new AMP project from this repo (URL or uploaded archive)
+2. Set these environment variables in the AMP form:
+   - `WHISPER_BASE_URL` (required)
+   - `LLM_BASE_URL` (required)
+   - `LLM_MODEL_ID` (required)
+   - `API_KEY` (optional; if not provided, the app reads `/tmp/jwt` and uses `access_token` automatically)
+   - `MEETINGS_DIR`, `TRANSCRIPTIONS_DIR` (optional overrides)
+3. During deployment, Step 1 (Session) runs `pip install .`; Step 2 (Application) starts Streamlit process
+4. Launch the Application; the app will be reachable at the AMP-provided URL
+
+### Running Locally
 
 1. **Clone the repository:**
    ```bash
    git clone <repository-url>
-   cd call_capture
+   cd echo_notes
    ```
 
 2. **Install dependencies:**
@@ -29,10 +42,10 @@ uv run python echo_notes_app.py
 3. **Configure API credentials (REQUIRED):**
    ```bash
    # Copy the example configuration file
-   cp env.example .env
+   cp .env.example .env
 
    # Edit .env with your actual API credentials
-   # All required variables must be set - see env.example for details
+   # All required variables must be set - see .env.example for details
    ```
 
    **Required environment variables:**
@@ -41,73 +54,27 @@ uv run python echo_notes_app.py
    - `LLM_BASE_URL`: LLM service endpoint (OpenAI-compatible)
    - `LLM_MODEL_ID`: LLM model identifier
 
-## Project Structure
-
-```
-call_capture/
-├── src/echo_notes/            # Main package
-│   ├── api/                   # API clients
-│   ├── core/                  # Business logic & recording
-│   ├── ui/                    # Streamlit interface
-│   └── config/                # Configuration management
-├── tests/                     # Test files
-├── echo_notes_app.py          # Streamlit entry point
-├── start_ui.sh                # UI launcher script
-└── pyproject.toml            # Project configuration
-```
-
-## Features
-
-- 🎤 **Pure Python Recording**: Cross-platform audio recording with sounddevice
-- 📝 **Transcription**: Hosted Whisper API with multi-language support
-- 📁 **File Organization**: Automatic project-based file management
-- 🖥️ **Web Interface**: Beautiful, modern Streamlit UI
-- 🎛️ **Device Selection**: Choose your preferred microphone
-- 🔒 **Secure**: Environment-based credential management
-- ⚡ **Fast**: No local model downloads required
-- 🌍 **Cross-platform**: Works on macOS, Windows, and Linux
-
-## Documentation
-
-### Features
-
-- 🎤 Audio Recording: Record audio via Streamlit UI
-- 📝 Transcription: Hosted Whisper API to text
-- 🌐 Multi-language Support: English, Spanish, French, German, etc.
-- 🔄 Format Conversion: Mono, 16‑bit WAV conversion handled automatically
-- 💾 Auto-save: Recordings saved to `~/Documents/meetings`
-- 📁 Project Organization: Each transcription has its own folder in `~/Documents/transcriptions`
-- 🔒 Secure: API keys via environment variables
-- ⚡ Fast: No local models required
-
-### Requirements
-
-- Python 3.12+
-- macOS/Windows/Linux with a microphone
-- [uv](https://github.com/astral-sh/uv) recommended, or pip
-
-### Usage (Web Interface)
-
+4. **Start Application:**
 ```bash
+# Start the application
+./start_ui.sh
+
+# Or directly with uv
 uv run python echo_notes_app.py
-# or
-streamlit run echo_notes_app.py
 ```
 
-The web app includes:
-- Recording controls (start/stop)
-- Upload for transcription
-- Language selection
-- Transcript preview and downloads
+## Advanced Configuration
 
-### Project Organization
+Quick Actions (Chat) overrides:
+- QUICK_ACTIONS_FILE: Path to JSON file with an array of `{label, prompt}`
+- QUICK_ACTIONS: JSON string for the same structure
+- Defaults: Summary, Sentiment, Action Items
 
-Each transcription creates a folder under `~/Documents/transcriptions/`:
-
+Example QUICK_ACTIONS JSON:
 ```
-~/Documents/transcriptions/
-└── YYYY-MM-DD_ProjectName/
-    ├── transcript.txt           # Generated transcript
-    ├── original_filename.ext    # Original audio file
-    └── project_info.txt         # Project metadata
+[
+  {"label": "🧾 Summary", "prompt": "Write a concise summary of the transcription focusing on key points."},
+  {"label": "🙂 Sentiment", "prompt": "Analyze the overall sentiment and tone."},
+  {"label": "✅ Action Items", "prompt": "Extract action items with owners and suggested due dates."}
+]
 ```
