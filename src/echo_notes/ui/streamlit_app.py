@@ -71,7 +71,6 @@ LLM_MODEL_ID=your_model_id
         st.stop()
         return
 
-    # Create navigation structure
     pages = [
         st.Page(page_record, title="Record", icon="🎙️"),
         st.Page(page_transcribe, title="Transcribe", icon="🚀"),
@@ -79,8 +78,6 @@ LLM_MODEL_ID=your_model_id
         st.Page(page_chat_with_transcription, title="Chat with Transcription", icon="💬"),
     ]
 
-    # Expose page references in session state for programmatic navigation
-    # This avoids ambiguity about titles/paths and works with st.switch_page
     st.session_state.page_refs = {
         "Record": pages[0],
         "Transcribe": pages[1],
